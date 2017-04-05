@@ -17,11 +17,7 @@ func main() {
 		return c.String(http.StatusOK, "wellcome to promition info service :)!")
 	})
 
-	router.POST("/products", getProducts2)
-
-	router.GET("/products", getProducts)
-	router.GET("/price", getPrice)
-	// router.GET("/promotion", getPrice)
+	router.POST("/promotion/", getPromotion)
 
 	router.GET("/version", getVersion)
 
@@ -31,61 +27,15 @@ func main() {
 
 }
 
-func getProducts2(c echo.Context) error {
-	products := make([]product, 6)
-	x, _ := c.MultipartForm()
-	y := c.ParamNames()
+func getPromotion(c echo.Context) error {
+	promotions := make([]promotion, 4)
 
-	if x == nil {
+	promotions[0] = promotion{"1222", "2654", "Percentage", "10"}
+	promotions[1] = promotion{"23455", "2455", "Percentage", "15"}
+	promotions[2] = promotion{"5523455", "2564", "Buytow", "GetOneFree"}
+	promotions[3] = promotion{"213441", "6542", "MonetoryDiscount", "2"}
 
-	}
-
-	if y == nil {
-
-	}
-
-	products[0] = product{"Post Data sweet mangoes", "1222", "mangoes of the time"}
-	products[1] = product{"greate grapes", "23455", "grapes of the time"}
-	products[2] = product{"greate grapes", "5523455", "grapes of the time"}
-	products[3] = product{"Tesco Gala Apple Minimum 5 Pack", "213441", "Tesco Gala Apple Minimum 5 Pack"}
-	products[4] = product{"Tesco Braeburn Apple Minimum 5 Pack 670G", "2344333", ""}
-	products[5] = product{"Tesco Apple Juice 1 Litre", "0987654444", ""}
-
-	er := c.JSON(200, products)
-	return er
-
-}
-
-func getProducts(c echo.Context) error {
-	products := make([]product, 6)
-
-	x := c.Request
-
-	if x == nil {
-		fmt.Println("empty")
-	}
-	products[0] = product{"sweet mangoes", "1222", "mangoes of the time"}
-	products[1] = product{"greate grapes", "23455", "grapes of the time"}
-	products[2] = product{"greate grapes", "5523455", "grapes of the time"}
-	products[3] = product{"Tesco Gala Apple Minimum 5 Pack", "213441", "Tesco Gala Apple Minimum 5 Pack"}
-	products[4] = product{"Tesco Braeburn Apple Minimum 5 Pack 670G", "2344333", ""}
-	products[5] = product{"Tesco Apple Juice 1 Litre", "0987654444", ""}
-
-	er := c.JSON(200, products)
-	return er
-
-}
-
-func getPrice(c echo.Context) error {
-	prices := make([]price, 6)
-
-	prices[0] = price{"1222", "2654", "76", "$"}
-	prices[1] = price{"23455", "23455", "76", "$"}
-	prices[2] = price{"5523455", "2564", "76", "$"}
-	prices[3] = price{"213441", "6542", "76", "$"}
-	prices[4] = price{"2344333", "2344", "76", "$"}
-	prices[5] = price{"0987654444", "5256", "76", "$"}
-	er := c.JSON(200, prices)
+	er := c.JSON(200, promotions)
 	return er
 }
 
@@ -96,15 +46,9 @@ func getHealth(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
-type product struct {
-	Name        string `json:"pname"`
-	Id          string `json:"id"`
-	Description string
-}
-
-type price struct {
-	ProductId string `json:"pid"`
-	Storeid   string `json:"sid"`
-	Value     string
-	Currency  string
+type promotion struct {
+	ProductId     string `json:"pid"`
+	Storeid       string `json:"sid"`
+	PromotionType string
+	Value         string
 }

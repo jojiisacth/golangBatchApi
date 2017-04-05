@@ -1,16 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
-	"strconv"
-	"time"
-
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -20,124 +15,46 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", Index)
 
-	router.HandleFunc("/batch/", processBatch)
+	router.HandleFunc("/price/", getPrice)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8083", router))
 
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf(w, "Hello, wellcome to batch api")
+	fmt.Fprintf(w, "Hello, wellcome to price api")
 
 }
 
-func processBatch(w http.ResponseWriter, r *http.Request) {
-	batchRequest := BatchRequest{}
-	parseData(r, &batchRequest)
+func getPrice(w http.ResponseWriter, r *http.Request) {
 
-	results := getBatchResult(&batchRequest)
+	body, err := ioutil.ReadAll(r.Body)
 
-	for _, result := range results {
-		if result != nil && result.response != nil {
-			//fmt.Fprintf(w, "{\"status\":\"%s\",\n\"result\":},", result.response.Status)
-			fmt.Fprintf(w, "\n")
-			result.response.Write(w)
-		}
-	}
-
-}
-
-func getBatchResult(batchRequest *BatchRequest) []*HttpResponse {
-	ch := make(chan *HttpResponse)
-	responses := []*HttpResponse{}
-
-	client := http.Client{}
-	for _, rq := range batchRequest.Data {
-
-		switch {
-		case strings.EqualFold(rq.Method, "get"):
-			go func(url string) {
-				fmt.Printf("Fetching %s \n", url)
-				resp, err := client.Get(url)
-				ch <- &HttpResponse{url, resp, err}
-				if err != nil && resp != nil && resp.StatusCode == http.StatusOK {
-					resp.Body.Close()
-				}
-			}(rq.Url)
-		case strings.EqualFold(rq.Method, "post"):
-			go func(rq Request) {
-				fmt.Printf("Posting %s \n", rq.Url)
-				data := url.Values{}
-
-				for _, body := range rq.Body {
-					data.Add(body.Name, body.Value)
-				}
-
-				//resp, err := client.Post(rq.Url, rq.ContentType, bytes.NewBufferString(data.Encode()))
-
-				client := &http.Client{}
-				r, _ := http.NewRequest("POST", rq.Url, bytes.NewBufferString(data.Encode())) // <-- URL-encoded payload
-				r.Header.Add("Authorization", "auth_token=\"XXXXXXX\"")
-				r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-				r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-
-				resp, err := client.Do(r)
-
-				ch <- &HttpResponse{rq.Url, resp, err}
-				if err != nil && resp != nil && resp.StatusCode == http.StatusOK {
-					resp.Body.Close()
-				}
-			}(rq)
-		default:
-			fmt.Printf("Un supported method '%s' \n", rq.Method)
-		}
-
-	}
-
-	for {
-		select {
-		case r := <-ch:
-			fmt.Printf("%s was fetched\n", r.url)
-			if r.err != nil {
-				fmt.Println("with an error", r.err)
-			}
-			responses = append(responses, r)
-			if len(responses) == len(batchRequest.Data) {
-				return responses
-			}
-		case <-time.After(50 * time.Millisecond):
-			fmt.Printf(".")
-		}
-	}
-	return responses
-}
-
-func parseData(request *http.Request, batchRequest *BatchRequest) {
-	decoder := json.NewDecoder(request.Body)
-	err := decoder.Decode(&batchRequest)
 	if err != nil {
-		fmt.Println(err.Error())
+		panic(err)
 	}
+	sb := string(body)
+	log.Println(sb)
+
+	prices := make([]price, 6)
+
+	prices[0] = price{"1222", "2654", "76", "$"}
+	prices[1] = price{"23455", "23455", "76", "$"}
+	prices[2] = price{"5523455", "2564", "76", "$"}
+	prices[3] = price{"213441", "6542", "76", "$"}
+	prices[4] = price{"2344333", "2344", "76", "$"}
+	prices[5] = price{"0987654444", "5256", "76", "$"}
+	//fmt.Fprintf(w, products)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	json.NewEncoder(w).Encode(prices)
+	return
 }
 
-type BatchRequest struct {
-	Data []Request
-}
-
-type Request struct {
-	Url         string
-	Method      string
-	Body        []Body
-	ContentType string
-}
-type Body struct {
-	Name  string
-	Value string
-}
-
-type HttpResponse struct {
-	url      string
-	response *http.Response
-	err      error
+type price struct {
+	ProductId string `json:"pid"`
+	Storeid   string `json:"sid"`
+	Value     string
+	Currency  string
 }
