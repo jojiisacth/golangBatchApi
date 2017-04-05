@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "url": "http://localhost:8081/products",
+            "Method": "get",
+            "body": [
+                {
+                    "key": "value"
+                },
+                {
+                    "key": "value"
+                }
+            ]
+        },
+        {
+            "url": "http://localhost:8081/price",
+            "Method": "get"
+        }
+    ]
+}
