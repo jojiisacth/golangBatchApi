@@ -45,6 +45,8 @@ A restful api which will server  promotion information
      Now the bath api is ready     
 4. Test 
     send  bact requests as follow
+    
+    
          cd <root>/batchApi
          curl -vX POST http://localhost:8080/batch/ -d @request.json --header "Content-Type: application/json"
     
