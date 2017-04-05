@@ -1,20 +1,52 @@
 {
     "data": [
-        {
-            "url": "http://localhost:8081/products",
-            "Method": "get",
+        { 
+            "url": "http://localhost:8081/products/",
+            "Method": "post",
             "body": [
                 {
-                    "key": "value"
+                    "Name": "param1",
+                    "Value": "Value1"
                 },
                 {
-                    "key": "value"
+                       "Name": "param2",
+                    "Value": "Value2"
+                },{   "Name": "param3",
+                    "Value": "Value3"
                 }
             ]
         },
-        {
-            "url": "http://localhost:8081/price",
-            "Method": "get"
+         {
+            "url": "http://localhost:8083/price/",
+            "Method": "post",
+            "body": [
+                {
+                    "Name": "param1",
+                    "Value": "Value1"
+                },
+                {
+                       "Name": "param2",
+                    "Value": "Value2"
+                },{   "Name": "param3",
+                    "Value": "Value3"
+                }
+            ]
+        },
+         {
+            "url": "http://localhost:8082/promotion/",
+            "Method": "post",
+            "body": [
+                {
+                    "Name": "param1",
+                    "Value": "Value1"
+                },
+                {
+                       "Name": "param2",
+                    "Value": "Value2"
+                },{   "Name": "param3",
+                    "Value": "Value3"
+                }
+            ]
         }
     ]
 }
