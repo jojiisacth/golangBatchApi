@@ -37,6 +37,7 @@ A restful api which will server  promotion information
         cd <root>/priceapi && ./setup.sh  
         cd <root>/productapi && ./setup.sh 
         cd <root>/promotionapi && ./setup.sh  
+ 
         
 3. start the batch api as follows
 
